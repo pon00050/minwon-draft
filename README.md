@@ -102,6 +102,17 @@ skill just calls whatever `korean-law` tools are available.
 
 ---
 
+## Troubleshooting
+
+- **"korean-law … failed to connect" right after install.** On its first run, the
+  connector downloads `korean-law-mcp` via `npx`, which can exceed the health-check
+  timeout — so `/plugin` or `claude mcp list` may show it as failed for a few seconds.
+  It connects once the download finishes (subsequent launches are instant). If it
+  stays failed, check that Node.js 18+ is installed (`node --version`) and that your
+  network allows npm.
+- **Citations come back tagged `⚠️ 미검증`.** No `LAW_OC` key is configured. Re-run
+  the plugin's configure step and add your free key (see Install above).
+
 ## Privacy
 
 - Your `LAW_OC` key is stored locally by Claude Code as a sensitive value; it is
