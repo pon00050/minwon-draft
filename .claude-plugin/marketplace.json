@@ -1,0 +1,28 @@
+{
+  "name": "minwon-draft-marketplace",
+  "owner": {
+    "name": "pon00050",
+    "url": "https://github.com/pon00050"
+  },
+  "plugins": [
+    {
+      "name": "minwon-draft",
+      "source": "./",
+      "description": "Compose copy-paste-ready 국민신문고 민원 / 안전신문고 안전신고 from raw facts — 6-section assert-then-confirm method, live statute verification via korean-law-mcp, adversarial self-review, and a response-contingency plan.",
+      "version": "1.0.0",
+      "author": {
+        "name": "pon00050"
+      },
+      "homepage": "https://github.com/pon00050/minwon-draft",
+      "license": "MIT",
+      "keywords": [
+        "korean-government",
+        "민원",
+        "국민신문고",
+        "안전신문고",
+        "petition",
+        "civic-tech"
+      ]
+    }
+  ]
+}

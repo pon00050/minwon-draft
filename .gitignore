@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Env / secrets — never commit a LAW_OC key
+.env
+.env.*
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Saved 민원 records (may contain PII — keep them out of the repo)
+국민신문고/
+민원기록/
+*_민원.md

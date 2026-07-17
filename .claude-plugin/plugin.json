@@ -1,0 +1,38 @@
+{
+  "name": "minwon-draft",
+  "version": "1.0.0",
+  "description": "Compose copy-paste-ready 국민신문고 민원 / 안전신문고 안전신고 (Korean government e-petition & safety-report) content from raw facts. 6-section assert-then-confirm method, live statute verification via the bundled korean-law-mcp connector, an adversarial self-review, and a response-contingency plan.",
+  "author": {
+    "name": "pon00050",
+    "url": "https://github.com/pon00050"
+  },
+  "homepage": "https://github.com/pon00050/minwon-draft",
+  "repository": "https://github.com/pon00050/minwon-draft",
+  "license": "MIT",
+  "keywords": [
+    "korean-government",
+    "민원",
+    "국민신문고",
+    "안전신문고",
+    "petition",
+    "civic-tech",
+    "claude-skill"
+  ],
+  "mcpServers": {
+    "korean-law": {
+      "command": "npx",
+      "args": ["-y", "korean-law-mcp@latest"],
+      "env": {
+        "LAW_OC": "${user_config.law_oc}"
+      }
+    }
+  },
+  "userConfig": {
+    "law_oc": {
+      "type": "string",
+      "title": "법제처 API 키 (LAW_OC) — optional, enables live statute verification",
+      "description": "Free from https://open.law.go.kr/LSO/openApi/guideList.do (sign up, request 'Open API 사용 신청' — takes ~1 minute). Enables live citation verification via korean-law-mcp. You can leave this blank: the skill still drafts the petition, but statute citations are tagged '⚠️ 미검증' for you to verify by hand.",
+      "sensitive": true
+    }
+  }
+}
