@@ -1,130 +1,103 @@
 # minwon-draft
 
-A [Claude Code](https://claude.com/claude-code) skill that turns raw facts into
-**copy-paste-ready Korean government e-petition content** — 국민신문고 민원 and
-안전신문고 안전신고.
+**사실관계만 붙여넣으면, 제출 가능한 국민신문고 민원 · 안전신문고 안전신고 내용으로.** 6단 구성의 "주장 후 확인(assert-then-confirm)" 방식 + **법령 인용 실시간 검증(korean-law-mcp)** + **적대적 자기 검토** + **응답 시나리오별 대응 계획**까지 [Claude Code](https://claude.com/claude-code)에서 바로.
 
-You paste the facts (an issue, an agency, some statutes, maybe a prior agency
-reply); it returns a submission-ready **제목** and plain-text **내용**, plus the
-recommended 민원종류/기관/channel, a statute-citation table, and a response-contingency
-plan for every way the agency might answer.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude_Code-Plugin-8A2BE2)](https://claude.com/claude-code)
+[![인용 검증: korean-law-mcp](https://img.shields.io/badge/인용검증-korean--law--mcp-blue)](https://github.com/chrisryugj/korean-law-mcp)
 
-It is built around a specific, repeatable method:
-
-- **6-section assert-then-confirm structure** — state the favorable conclusion as
-  your understanding and ask the office only to confirm it, so every answer
-  (including a refusal) comes back citable and usable.
-- **Live statute verification** — every 조문 you quote is checked against the live
-  law.go.kr data via the [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)
-  connector, with 시행일자, so you never quote a stale or hallucinated article.
-- **Adversarial self-review** — the draft is red-teamed against a skeptical
-  front-line clerk's incentives before it is delivered.
-- **안전신문고-aware** — respects the portal's ~1,600-character 내용 cap, silent field
-  truncation, and photo-interval rules for auto-과태료 enforcement reports.
-
-> The method is **domain-general**. The bundled examples (a payments-clearance
-> question, an anti-discrimination query, a traffic-safety report) are illustrations
-> only — the skill verifies every statute and term fresh for whatever your 민원 is
-> about.
+> Claude Code용 스킬(플러그인). 사실관계(쟁점·기관·근거 법령, 필요하면 이전 답변)를 주면 → 제출용 **제목**과 plain-text **내용**, 권장 민원종류/기관/채널, 인용 검증표, 그리고 기관이 어떻게 답하든 대비하는 응답 대응 계획을 만들어 줍니다.
 
 ---
 
-## Install
+## 주요 기능
 
-Requires Claude Code.
+- **6단 "주장 후 확인" 구조** — 유리한 결론을 "…로 이해됩니다. 이 이해가 맞습니까?" 형태로 제시해, 담당자가 반박하는 쪽이 더 비싸지도록 설계합니다. 그 결과 답변이 거부여도 인용 가능한 형태로 돌아옵니다.
+- **법령 인용 실시간 검증** — 인용하는 모든 조문을 [korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) 커넥터로 law.go.kr **현행** 데이터와 대조합니다(시행일자 포함). 기억·웹검색 인용 금지 — 잘못되거나 낡은 인용은 민원 전체의 신뢰도를 떨어뜨립니다.
+- **적대적 자기 검토** — 제출 전, 일선 담당자의 인센티브를 시뮬레이션해 초안을 스스로 red-team 합니다(자기불리 진술 삭제, 회피(punt) 차단, 금지 표현 제거, 층위(법규/사실/포섭) 점검).
+- **안전신문고 대응** — 내용 **≈1,600자 하드캡**, 보조 입력칸(차량번호 등) 무음 절삭(truncation), 자동 과태료용 **사진 촬영 간격** 규칙을 초안에 미리 반영합니다.
+
+> 이 방법론은 **도메인 일반적**입니다. 동봉된 예시(전자금융거래법 해당 여부, 장애인 차별 진정, 교통 안전신고)는 구조·기법을 보여주는 예시일 뿐이며, 스킬은 매 민원마다 법령·용어를 새로 검증합니다.
+
+---
+
+## 설치
+
+Claude Code가 필요합니다.
+
+### 0단계: 법제처 API 키 발급 (무료, 1분)
+
+인용 검증에 사용할 **법제처 Open API 인증키(`LAW_OC`)**를 먼저 발급받으세요.
+
+1. [법제처 Open API 신청 페이지](https://open.law.go.kr/LSO/openApi/guideList.do)에 접속합니다.
+2. 회원가입 후 로그인합니다.
+3. **"Open API 사용 신청"**을 누르면 인증키(OC)가 발급됩니다. (예: `honggildong`)
+
+> **키가 없어도 동작합니다.** 키를 비워 두면 스킬은 민원 초안을 그대로 작성하되, 각 법령 인용에 `⚠️ 미검증 — 제출 전 재확인` 태그를 붙입니다. 제출 전 https://www.law.go.kr 에서 직접 확인하세요. 나중에 키를 추가하면 자동 검증이 켜집니다.
+
+### 설치 (Claude Code, 두 줄)
 
 ```
 /plugin marketplace add pon00050/minwon-draft
 /plugin install minwon-draft@minwon-draft-marketplace
 ```
 
-During install you'll be asked for a **법제처 Open API key (`LAW_OC`)**. This is
-what powers live statute verification. It is **free and takes about a minute**:
-
-1. Go to <https://open.law.go.kr/LSO/openApi/guideList.do>
-2. Sign up / log in, then request **"Open API 사용 신청"**
-3. You'll be issued an 인증키(OC) — paste it into the install prompt.
-
-The key is stored as a sensitive value and used only to call law.go.kr through the
-bundled `korean-law-mcp` server.
-
-### No key? It still works.
-
-You can leave the key blank. The skill will still draft the full petition — it just
-tags each statute citation `⚠️ 미검증 — 제출 전 재확인` for you to verify by hand at
-<https://www.law.go.kr> before submitting. Add the key later to turn on automatic
-verification.
+설치 중 **법제처 API 키**를 입력하라는 프롬프트가 뜹니다(0단계에서 발급받은 키). 민감정보로 안전하게 저장되며, `korean-law-mcp` 서버가 law.go.kr을 호출할 때만 사용됩니다.
 
 ---
 
-## Use
+## 사용법
 
-Ask Claude Code in natural language, or invoke the skill directly:
+Claude Code에 자연어로 말하거나, 스킬을 직접 호출하세요.
 
 ```
-/minwon-draft:minwon-draft <paste your facts here>
+/minwon-draft:minwon-draft <사실관계를 여기에 붙여넣기>
 ```
 
-Examples of what triggers it:
+트리거 예시:
 
-- "불법주정차 신고 내용 좀 써줘 — 우리 집 앞 소화전에 계속 주차하는 차가 있어"
+- "집 앞 소화전에 계속 주차하는 차가 있어 — 불법주정차 신고 내용 좀 써줘"
 - "이 사실관계로 국민신문고 민원 초안 만들어줘: …"
-- "○○부 고시 해석을 물어보는 질의를 쓰고 싶어"
+- "○○부 고시 해석을 묻는 질의를 쓰고 싶어"
 
-It walks through intake → citation verification → drafting → adversarial review →
-delivery, and offers to save an archival record you can complete once you have the
-접수 확인번호.
+스킬은 **접수 → 인용 검증 → 초안 → 적대적 검토 → 전달**(제목 + 내용) 순으로 진행하고, 접수 확인번호를 받은 뒤 완성할 수 있는 보관용 기록(.md)도 저장을 제안합니다.
 
-**Scope (v1):** 국민신문고 일반민원 + 고충민원, and 안전신문고 안전신고. For 문서24 공문,
-정보공개청구, and 행정심판, it recommends the right next step but does not draft those
-documents.
+**적용 범위(v1):** 국민신문고 일반민원 · 고충민원, 안전신문고 안전신고. 문서24 공문, 정보공개청구, 행정심판은 다음 단계로 **안내만** 하고 문서 작성은 범위 밖입니다.
 
 ---
 
-## How verification works
+## 인용 검증 작동 방식
 
-Verification is delegated to **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)**
-(MIT), a mature MCP server wrapping the 법제처 국가법령정보 Open API. This plugin
-declares it as a bundled MCP server, so installing the plugin also wires up the
-connector — no separate setup beyond the free key.
+검증은 **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)** (MIT)에 위임합니다. 법제처 국가법령정보 Open API를 감싸는 성숙한 MCP 서버로, 이 플러그인은 이를 **번들 MCP 서버로 선언**하므로 플러그인 설치만으로 커넥터까지 함께 설정됩니다 — 무료 키 외에 별도 설정이 없습니다.
 
-The skill uses it to:
+스킬이 사용하는 도구:
 
-- confirm a law exists and fetch its **시행일자 / MST** (`search_law`),
-- pull exact 조문 전문 to quote verbatim (`get_law_text`),
-- run a hallucination check that catches wrong article titles (`legal_analysis`,
-  `mode: verify_citations`),
-- verify **행정규칙** — 고시·훈령·예규 (`search_admin_rule` / `get_admin_rule`),
-- verify 판례 (`search_precedents` / `get_precedent_text`).
+- **`search_law`** — 법령 실존 확인 + **시행일자 / MST** (현행본인지 확인)
+- **`get_law_text`** — 조문 전문을 verbatim 인용
+- **`legal_analysis`** (`mode: verify_citations`) — 실존 + 조문 제목 일치(환각) 검증
+- **`search_admin_rule` / `get_admin_rule`** — **행정규칙**(고시·훈령·예규)
+- **`search_precedents` / `get_precedent_text`** — 판례
 
-If you already run `korean-law-mcp` as your own connector, that works too — the
-skill just calls whatever `korean-law` tools are available.
+이미 `korean-law-mcp`를 본인 커넥터로 쓰고 있다면 그대로 동작합니다 — 스킬은 사용 가능한 `korean-law` 도구를 호출합니다.
 
 ---
 
-## Troubleshooting
+## 문제 해결
 
-- **"korean-law … failed to connect" right after install.** On its first run, the
-  connector downloads `korean-law-mcp` via `npx`, which can exceed the health-check
-  timeout — so `/plugin` or `claude mcp list` may show it as failed for a few seconds.
-  It connects once the download finishes (subsequent launches are instant). If it
-  stays failed, check that Node.js 18+ is installed (`node --version`) and that your
-  network allows npm.
-- **Citations come back tagged `⚠️ 미검증`.** No `LAW_OC` key is configured. Re-run
-  the plugin's configure step and add your free key (see Install above).
-
-## Privacy
-
-- Your `LAW_OC` key is stored locally by Claude Code as a sensitive value; it is
-  never committed to this repo.
-- Draft petitions and saved records stay on your machine. The `.gitignore` keeps
-  `국민신문고/` records and `.env` files out of version control by default.
+- **설치 직후 "korean-law … 연결 실패(failed to connect)".** 첫 실행 시 `npx`가 `korean-law-mcp`를 내려받는 동안 health check 시간을 초과할 수 있어, `/plugin`이나 `claude mcp list`가 잠시 실패로 표시될 수 있습니다. 다운로드가 끝나면 연결됩니다(이후 실행은 즉시). 계속 실패하면 Node.js 18+ 설치(`node --version`)와 npm 네트워크 접근을 확인하세요.
+- **인용이 `⚠️ 미검증`으로 표시됨.** `LAW_OC` 키가 설정되지 않았습니다. 플러그인 구성(configure)에서 무료 키를 추가하세요(위 설치 참조).
 
 ---
 
-## Credits & license
+## 개인정보 보호
 
-- Skill and method: MIT License (see [LICENSE](LICENSE)).
-- Statute verification: **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)**
-  by Chris (MIT) — please star their project; this skill relies on it.
-- Statute data: 법제처 국가법령정보 (law.go.kr) Open API.
+- `LAW_OC` 키는 Claude Code가 민감정보로 **로컬 저장**하며, 이 저장소에 커밋되지 않습니다.
+- 초안과 저장된 기록은 사용자의 컴퓨터에만 남습니다. `.gitignore`가 `국민신문고/` 기록과 `.env` 파일을 기본으로 버전 관리에서 제외합니다.
+
+---
+
+## 크레딧 및 라이선스
+
+- 스킬 · 방법론: MIT License ([LICENSE](LICENSE))
+- 인용 검증: **[korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp)** by Chris (MIT) — 이 스킬은 해당 프로젝트에 의존합니다. ⭐ 한 번 눌러 응원해 주세요.
+- 법령 데이터: 법제처 국가법령정보(law.go.kr) Open API
