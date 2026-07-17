@@ -10,7 +10,7 @@
       "name": "minwon-draft",
       "source": "./",
       "description": "Compose copy-paste-ready 국민신문고 민원 / 안전신문고 안전신고 from raw facts — 6-section assert-then-confirm method, live statute verification via korean-law-mcp, adversarial self-review, and a response-contingency plan.",
-      "version": "1.0.0",
+      "version": "0.1.0",
       "author": {
         "name": "pon00050"
       },

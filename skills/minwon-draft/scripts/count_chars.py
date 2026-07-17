@@ -15,14 +15,24 @@ Usage
 Channel is optional; if given (and known), the script prints headroom + a
 PASS / WARN / OVER verdict against that channel's 내용 limit.
 
-Known limits (the ONLY hard cap verified so far is 안전신문고):
-    안전신문고  = 1600   내용 field. A full 6-단 draft can hit ~1,597/1,600 and need
-                        rewriting. The portal counts conservatively, so this script
-                        checks the LARGEST count (incl. whitespace + newlines).
-    국민신문고  = None   large; exact cap NOT verified — confirm at the portal.
+Channel caps (each carries provenance — do not treat as authoritative):
+    안전신문고  = 1600   내용 field.
+        Source:    direct portal observation (a draft hit ~1,597/1,600 and had to
+                   be rewritten).
+        Confidence: PROVISIONAL — single observation, not a cited/maintained spec.
+        Applies to: 안전신문고 안전신고 내용 field.
+        Recheck if: the portal UI changes, or a draft near the cap is accepted/
+                   rejected differently than this predicts.
+    국민신문고  = None   large; exact cap NOT observed — confirm at the portal.
     문서24     = None   out of skill v1 scope.
 
-When you discover a new portal's real cap, add it here — one place.
+When you observe a new portal's real cap, add it here with the same provenance.
+
+Counting note: this counts Python string length (Unicode code points). Korean
+syllables are 1 code point each, so counts match the portal for ordinary 민원 text.
+Astral characters (most emoji) are 1 code point here but 2 UTF-16 units in a
+JS-based textarea counter — avoid emoji in 내용 (you shouldn't use them anyway), or
+treat a near-cap count as approximate if any are present.
 """
 import sys
 import io
@@ -32,7 +42,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 # ── channel 내용 character limits ─────────────────────────────────────────────
 CHANNEL_LIMITS = {
-    "안전신문고": 1600,   # verified against the live portal (a draft hit ~1,597/1,600)
+    "안전신문고": 1600,   # PROVISIONAL (observed, not spec) — see provenance in docstring
     "국민신문고": None,   # large; verify at portal before trusting a number
     "문서24": None,
 }

@@ -99,15 +99,19 @@ If the 민원 is a safety/enforcement report headed for **안전신문고**, thr
 constraints bite in practice — bake them into the draft, don't discover them at
 the paste box:
 
-1. **내용 글자수 한도 ≈ 1,600자 (hard cap).** This is far tighter than 국민신문고.
+> **Provenance:** the specifics below are from **direct portal observation
+> (provisional)**, not a cited/maintained spec. They held in practice but may drift
+> when the portal changes — treat them as strong defaults to verify, not as law.
+
+1. **내용 글자수 한도 ≈ 1,600자 (관측값, 잠정).** This is far tighter than 국민신문고.
    A full 6-단 draft can blow past it (~1,597/1,600 → has to be rewritten). **Measure
    the char count and target ≤ 1,400자 for headroom** (see SKILL.md Pass 4 char-budget
    step). Compress verbatim 조문 quotes to their operative phrase; fold the framing
    disclaimer and human closing into one sentence each; cap 질의 at 3–4.
-2. **Auxiliary structured fields truncate silently.** 안전신문고 has separate short
-   inputs (차량번호, 발생일시, 위반장소). The 차량번호 field can drop the last character
-   (e.g. `서울00가1234` → `서울00가123`). **Always restate the full identifier (전체 번호판
-   등) inside the 내용 body**, so a truncated field can't lose it.
+2. **Auxiliary structured fields can truncate silently (observed).** 안전신문고 has
+   separate short inputs (차량번호, 발생일시, 위반장소). A 차량번호 field was observed to drop
+   the last character (e.g. `서울00가1234` → `서울00가123`). **Always restate the full
+   identifier (전체 번호판 등) inside the 내용 body**, so a truncated field can't lose it.
 3. **Photo-evidence rules gate the auto-과태료.** For 6대 주민신고 items (횡단보도 등),
    most 지자체 require **2매 taken a set interval apart (통상 1분 이상)** and prefer
    **앱 현장촬영본**(촬영시각 자동각인). Same-second or gallery-uploaded ("G") photos may

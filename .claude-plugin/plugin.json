@@ -1,6 +1,6 @@
 {
   "name": "minwon-draft",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Compose copy-paste-ready 국민신문고 민원 / 안전신문고 안전신고 (Korean government e-petition & safety-report) content from raw facts. 6-section assert-then-confirm method, live statute verification via the bundled korean-law-mcp connector, an adversarial self-review, and a response-contingency plan.",
   "author": {
     "name": "pon00050",

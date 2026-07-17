@@ -1,6 +1,6 @@
 ---
 name: minwon-draft
-description: Generate copy-paste-ready 국민신문고 민원 / 안전신문고 안전신고 (Korean government e-petition & safety-report) content from raw facts. Structures the petition with the proven 6-section assert-then-confirm method, verifies every statute citation against the live law.go.kr data via the korean-law-mcp connector (or flags them for manual check), runs an adversarial self-review, and outputs a ready-to-submit 제목 + 내용 plus a response-contingency plan. Use whenever the user wants to draft/write/file a 민원, 국민신문고, 안전신문고, 불법주정차/안전 신고, 고충민원, 진정, or 정부 질의, or pastes facts and asks for petition content.
+description: Generate copy-paste-ready 국민신문고 민원 / 안전신문고 안전신고 (Korean government e-petition & safety-report) content from raw facts. Structures the petition with a field-developed, adversarially-refined 6-section assert-then-confirm method, verifies every statute citation against the live law.go.kr data via the korean-law-mcp connector (or flags them for manual check), runs an adversarial self-review, and outputs a ready-to-submit 제목 + 내용 plus a response-contingency plan. Use whenever the user wants to draft/write/file a 민원, 국민신문고, 안전신문고, 불법주정차/안전 신고, 고충민원, 진정, or 정부 질의, or pastes facts and asks for petition content.
 user-invocable: true
 argument-hint: [paste the raw facts, or a path to a file/notes containing them]
 ---
@@ -28,11 +28,23 @@ Read the reference files as you reach each pass — do not preload them all.
 The user's raw input is: **$ARGUMENTS** (if empty, use what they pasted in chat;
 if they gave a file path, read it).
 
-Extract these fields. **Infer aggressively and flag assumptions inline** — the
-user wants you to "take it from there," so do not interrogate. Ask **one** compact
-batch of questions (AskUserQuestion) only for a genuinely load-bearing unknown you
-cannot infer (typically: the target agency, or the exact conclusion they want
-confirmed). Otherwise proceed and mark assumptions with `⟦가정: …⟧`.
+Extract these fields. Move fast, but **calibrate inference to what's at stake** —
+this is a legal-administrative document, so a fabricated fact is worse than an
+extra question. Apply this hierarchy:
+
+- **Infer freely:** presentation choices (tone, ordering, section labels) and
+  low-risk context (신청인 지위 phrasing, which framing disclaimer fits).
+- **Never infer — these are load-bearing:** dates, numbers, 법적 지위/자격, agency
+  conduct, quoted text (조문·고시·prior reply wording), and the exact 법적 효과 the
+  user wants (what a favorable answer is). If one is missing, insert a **visible
+  placeholder** — `⟦확인 필요: 위반 일시⟧`, `⟦확인 필요: 대상 기관⟧` — not a guess.
+- Ask **one** compact batch of questions (AskUserQuestion) only for a genuinely
+  load-bearing unknown you cannot leave as a placeholder (typically: the target
+  agency, or the exact conclusion they want confirmed).
+
+Mark any low-risk assumption inline with `⟦가정: …⟧`. **Do not label the output
+제출용/ready-to-submit while any `⟦확인 필요: …⟧` placeholder remains** — say plainly
+which facts the user must fill before submitting.
 
 1. **신청인 지위** — who is petitioning (시민 / 사업자 / 예비 창업자 / 이용자 등).
 2. **민원 성격** — 개인 구제 vs 정책 질의 vs 문언 해석 vs 이의/clearance. Drives the
@@ -69,6 +81,14 @@ directly). Capture the verbatim 조문본문 + 시행일자. Typical tools:
 - `search_admin_rule` / `get_admin_rule` — for **행정규칙** (고시·훈령·예규·지침): these
   ARE verifiable via the connector (unlike the raw 법령 API).
 - `search_precedents` / `get_precedent_text` — for 판례 citations.
+
+**Procedural provisions get the same treatment as substantive ones.** Do NOT carry a
+generic ladder ("민원처리법 처리기한 14일", 이송의무, 이유제시 의무, 이의신청 기간) into a matter
+from memory — 처리기한, 소관 duty, and remedy windows vary by 민원종류, agency rule,
+statutory exception, and whether the agency action is a 처분. Verify each procedural
+article you cite (`민원 처리에 관한 법률`, `행정절차법`, `행정심판법`, `정보공개법` 등) live, and
+confirm the deadline/duty actually applies to *this* filing type before stating it.
+Anything unverified → `⚠️ 미검증`, same rule.
 
 **If the korean-law-mcp connector is not available** (not installed, or no LAW_OC
 key was provided at install), do NOT block the draft: produce it and tag every
@@ -109,6 +129,9 @@ Simulate the front-line clerk's incentives and red-team your own draft:
       question** so a one-line premise-denial can't foreclose it (rhetoric.md —
       "Calibrate to the analytical layer").
 - [ ] **Every citation verified** or tagged `⚠️ 미검증 / 재검증 권장 / 행정규칙 — 수기 검증`.
+- [ ] **Procedural claims verified too** — every 처리기한/이송의무/이의신청 기간 cited is
+      checked live AND confirmed to apply to this 민원종류, not assumed from a generic
+      ladder. No load-bearing `⟦확인 필요: …⟧` placeholder left in a "제출용" draft.
 - [ ] **Every question maps to a favorable branch.** Build the **응답 시 Action**
       table (favorable / evasive / unfavorable / silent → next move). If any
       branch is a dead end, re-engineer the question.
@@ -184,3 +207,9 @@ what the confirmation shows.
   settled points ("이미 확인되었으므로 재확인 불요") and narrow to the open 1–2 items.
 - **Domain-general:** the terminology in the reference files is **illustration
   only**. Verify this domain's statutes and terms fresh every time (Pass 1).
+- **Not legal advice — say so in delivery.** This skill drafts a document; it does
+  not determine legal rights. Verified 조문 text does not guarantee the correct legal
+  interpretation of it; an agency's answer may not be legally binding; and 처리기한/구제
+  기간 must be independently confirmed for the specific matter. When you deliver, add a
+  one-line reminder that the user should confirm load-bearing legal effect and
+  deadlines before relying on them — especially before any 이의신청/행정심판 rung.

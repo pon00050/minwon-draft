@@ -7,10 +7,15 @@ structure, assert-then-confirm tactic, and "every answer is usable" discipline
 apply whether the 민원 is about a licence, a fee, or a service refusal. So the method
 is domain-general; only the facts and statutes change.
 
-The mental model underneath everything: **a front-line official finds it costlier
-to rebut a stated conclusion than to reason from a blank page, will punt when
-jurisdiction is fuzzy, and will concede a procedural-law violation when it is
-cited explicitly.** Every technique below exploits one of those three.
+The design principle underneath everything: **a concrete, provisional interpretation
+is easier for an office to engage precisely than an open-ended question** — the
+responder can state exactly what it accepts, rejects, or qualifies, which is what
+makes the answer citable and useful. Two corollaries follow: jurisdiction left fuzzy
+invites a punt (so pre-draw the line inside the question), and a procedural duty is
+applied more reliably when the governing provision is named. Every technique below
+serves one of these — sharper questions, clearer records, more answerable filings.
+The goal is a better administrative record and a precise reply, **not pressure on
+the individual clerk.**
 
 ---
 
@@ -79,9 +84,12 @@ inter-agency contradiction into its own lever. Then climb only as far as needed:
 ```
 
 Each rung is **cumulative**: its output (공문, written admission, non-response) is
-cited as evidence in the next. The clocks drive the ladder — 민원처리법 14일,
-정보공개법 10일/20일, 행정심판 청구기한 90일. Track every clock; a missed agency clock
-becomes your procedural defect, a missed *own* clock forfeits a right.
+cited as evidence in the next. Clocks drive the ladder — commonly 민원처리법 14일,
+정보공개법 10일/20일, 행정심판 청구기한 90일 — **but these are typical values, not
+universal**: exact periods, extensions, and exceptions vary by 민원종류/처분 여부, so
+**verify each clock live for the specific matter** (Pass 1 / `law_verify.md`) before
+relying on it. Track every clock; a missed agency clock becomes your procedural
+defect, a missed *own* clock forfeits a right.
 
 ---
 
@@ -102,6 +110,10 @@ becomes your procedural defect, a missed *own* clock forfeits a right.
 Cite procedural statutes alongside substantive ones to close escape routes:
 민원 처리에 관한 법률 §9(부당반송 금지)·§16(이송의무)·§18, 행정절차법 §23①(처분이유 명시),
 행정심판법 §27(청구기한). "답을 안 준다"는 사실 자체가 다음 단계를 여는 별도 트리거다.
+**These article numbers and their duties/periods are a starting checklist, not
+settled law for your matter — verify each live (Pass 1) before citing it**, since a
+mis-cited procedural article discredits the filing exactly like a mis-cited
+substantive one.
 
 ## Two-track hedge
 Never make one 민원/track the sole path to the goal. Keep an independent track

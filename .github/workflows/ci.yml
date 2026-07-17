@@ -1,0 +1,70 @@
+name: validate
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Manifests are valid JSON
+        run: |
+          python -c "import json; json.load(open('.claude-plugin/plugin.json', encoding='utf-8')); print('plugin.json OK')"
+          python -c "import json; json.load(open('.claude-plugin/marketplace.json', encoding='utf-8')); print('marketplace.json OK')"
+
+      - name: Plugin/marketplace name + version agree
+        run: |
+          python - <<'PY'
+          import json
+          p = json.load(open('.claude-plugin/plugin.json', encoding='utf-8'))
+          m = json.load(open('.claude-plugin/marketplace.json', encoding='utf-8'))
+          entry = m['plugins'][0]
+          assert p['name'] == entry['name'], f"name mismatch: {p['name']} vs {entry['name']}"
+          assert p['version'] == entry.get('version'), f"version mismatch: {p['version']} vs {entry.get('version')}"
+          print("consistent:", p['name'], p['version'])
+          PY
+
+      - name: Required files present
+        run: |
+          python - <<'PY'
+          import os
+          req = [
+              'skills/minwon-draft/SKILL.md',
+              'skills/minwon-draft/references/anatomy.md',
+              'skills/minwon-draft/references/methodology.md',
+              'skills/minwon-draft/references/rhetoric.md',
+              'skills/minwon-draft/references/law_verify.md',
+              'skills/minwon-draft/references/examples.md',
+              'skills/minwon-draft/scripts/count_chars.py',
+              'LICENSE', 'README.md',
+          ]
+          missing = [f for f in req if not os.path.isfile(f)]
+          assert not missing, f"missing: {missing}"
+          print("all", len(req), "required files present")
+          PY
+
+      - name: SKILL.md frontmatter has name + description
+        run: |
+          python - <<'PY'
+          import re
+          txt = open('skills/minwon-draft/SKILL.md', encoding='utf-8').read()
+          m = re.match(r'^---\n(.*?)\n---\n', txt, re.S)
+          assert m, "no YAML frontmatter block"
+          fm = m.group(1)
+          assert re.search(r'^name:\s*\S', fm, re.M), "frontmatter missing name:"
+          assert re.search(r'^description:\s*\S', fm, re.M), "frontmatter missing description:"
+          print("SKILL.md frontmatter OK")
+          PY
+
+      - name: Compile + test count_chars.py
+        run: |
+          python -m py_compile skills/minwon-draft/scripts/count_chars.py
+          python skills/minwon-draft/scripts/test_count_chars.py
