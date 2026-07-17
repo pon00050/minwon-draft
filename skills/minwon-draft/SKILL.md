@@ -207,9 +207,19 @@ what the confirmation shows.
   settled points ("이미 확인되었으므로 재확인 불요") and narrow to the open 1–2 items.
 - **Domain-general:** the terminology in the reference files is **illustration
   only**. Verify this domain's statutes and terms fresh every time (Pass 1).
-- **Not legal advice — say so in delivery.** This skill drafts a document; it does
-  not determine legal rights. Verified 조문 text does not guarantee the correct legal
-  interpretation of it; an agency's answer may not be legally binding; and 처리기한/구제
-  기간 must be independently confirmed for the specific matter. When you deliver, add a
-  one-line reminder that the user should confirm load-bearing legal effect and
-  deadlines before relying on them — especially before any 이의신청/행정심판 rung.
+- **Closing reminder — scale it to the matter's risk, don't boilerplate it.** This
+  skill drafts a document; it does not determine legal rights. Add **one** short
+  closing reminder chosen to fit the matter (use Pass 0's 민원 성격 + channel) —
+  never stack the full legal caution on a routine report. Match the tier:
+  - **안전신고 / routine enforcement report** (fact-driven, no interpretive dispute) →
+    the risk is factual, so nudge the user to double-check **사실·증거** before
+    submitting (일시·위치·식별번호·사진 촬영 요건), nothing heavier.
+  - **법령 해석 · 해당 여부(clearance) 민원** → the risk is interpretive: note that a
+    verified 조문 does not settle its **해석**, and the agency's reply may be
+    non-binding(참고·유권해석 수준일 수 있음).
+  - **구제 절차 직전** (이의신청·행정심판·정보공개 이의, or any matter turning on a 기한/처분) →
+    the risk is a forfeited right: tell the user to confirm the applicable **기한/청구
+    기간** independently and consider professional review before relying on it.
+
+  Keep it to one or two lines in the matter's own register — a 소화전 신고 gets a
+  fact-check nudge, not a legal treatise.
