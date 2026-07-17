@@ -1,5 +1,6 @@
 {
   "name": "minwon-draft-marketplace",
+  "description": "Korean government e-petition tooling for Claude Code — the minwon-draft skill for drafting 국민신문고 민원 and 안전신문고 안전신고.",
   "owner": {
     "name": "pon00050",
     "url": "https://github.com/pon00050"
